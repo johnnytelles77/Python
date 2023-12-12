@@ -1,16 +1,14 @@
 from datetime import date
 
+from django.contrib import messages
 from django.shortcuts import redirect, render
 
-# from .models import Cliente, Pais
-from . import models
-
+from . import forms, models
 
 def home(request):
     clientes = models.Cliente.objects.all()
     context = {"clientes": clientes}
     return render(request, "cliente/index.html", context)
-
 
 def crear_clientes_varios(request):
     p1 = models.Pais(nombre="Paraguay")
@@ -29,7 +27,6 @@ def crear_clientes_varios(request):
     c4.save()
     return redirect("cliente:index")
 
-
 def busqueda(request):
     # búsqueda por nombre que contenga "dana"
     cliente_nombre = models.Cliente.objects.filter(nombre__contains="dana")
@@ -47,16 +44,21 @@ def busqueda(request):
     }
     return render(request, "cliente/busqueda.html", context)
 
-
-from . import forms
-
-
 def crear(request):
     if request.method == "POST":
         form = forms.ClienteForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect("cliente:index")
+            nombre = form.cleaned_data["nombre"]
+            apellido = form.cleaned_data["apellido"]
+
+            # Verificar si ya existe un cliente con el mismo nombre y apellido
+            if models.Cliente.objects.filter(nombre=nombre, apellido=apellido).exists():
+                messages.error(request, "Este cliente ya está registrado. Intente con otro nombre o apellido.")
+            else:
+                form.save()
+                messages.success(request, "Cliente registrado exitosamente.")
+                return redirect("cliente:index")
     else:
         form = forms.ClienteForm()
+
     return render(request, "cliente/crear.html", {"form": form})

@@ -1,13 +1,16 @@
+<!-- index.html -->
 {% extends 'core/base.html' %}
-    
-{% block titulo %}
-PRODUCTO
-{% endblock titulo %}
-
-
 
 {% block contenido %}
-<ul>
-    <li><a href="{% url 'core:index' %}">Volver al inicio</a></li>
-</ul>
+    <h2>Buscar Productos</h2>
+    <form method="post" action="{% url 'producto:index' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Buscar</button>
+    </form>
+
+    <h2>Resultado de la Búsqueda</h2>
+    {% for producto in productos %}
+        <p>{{ producto.nombre }}, {{ producto.categoria }}</p>
+    {% endfor %}
 {% endblock contenido %}

@@ -1,0 +1,8 @@
+{% extends 'core/base.html' %}
+
+{% block contenido %}
+    <h2>Todos los Productos</h2>
+    {% for producto in productos %}
+        <p>{{ producto.nombre }}, {{ producto.categoria }}, {{ producto.precio }}, {{ producto.color }}</p>
+    {% endfor %}
+{% endblock contenido %}
